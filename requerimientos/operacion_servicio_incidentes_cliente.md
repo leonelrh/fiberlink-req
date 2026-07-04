@@ -6,19 +6,7 @@ Feature: Correlación de incidentes de red con clientes afectados
 
   # Escenarios positivos
 
-  Scenario: Creación exitosa de incidente maestro por falla masiva
-    Given que el bus de eventos recibe alarmas normalizadas de los NMS regionales
-    And el filtrado y la deduplicación consolidan las alarmas relevantes
-    And el motor de correlación identifica un nodo troncal afectado
-    And el inventario de red asocia el nodo con los clientes conectados
-    When la falla supera el umbral de clientes afectados definido para incidente masivo
-    Then el sistema debe crear un incidente maestro en el ITSM
-    And debe registrar la lista de clientes afectados en el incidente
-    And debe asignar la severidad según el número de clientes y servicios impactados
-    And debe registrar el incidente con estado "Activo"
-    And debe iniciar el cronómetro de SLA del incidente
-   
-  Scenario: Una falla grande se registra como un solo incidente
+   Scenario: Una falla grande se registra como un solo incidente
     Given que el sistema recibe constantemente las señales de la red
     And el sistema conoce qué clientes dependen de cada parte de la red
     And se corta una fibra principal y llegan miles de alertas al mismo tiempo
@@ -38,14 +26,12 @@ Feature: Correlación de incidentes de red con clientes afectados
     And debe mostrar el aviso de falla masiva en el portal de autogestión
     And debe registrar la hora de envío de cada notificación
 
-  Scenario: Vinculación de llamada entrante a incidente maestro
-    Given que existe un incidente maestro en estado "Activo"
-    And un cliente afectado se comunica con el call center
-    When el agente consulta la ficha del cliente
-    Then el sistema debe indicar que el cliente pertenece a un incidente activo
-    And debe crear un ticket hijo vinculado al incidente maestro
-    And no debe permitir la creación de un ticket individual duplicado
-    And debe mostrar al agente el tiempo estimado de resolución
+  Scenario: El cliente que llama recibe la información sin esperar a un agente
+    Given que hay un incidente masivo activo
+    And un cliente afectado llama al call center
+    When el sistema telefónico reconoce el número del cliente en la lista de afectados
+    Then debe informarle de la falla y el tiempo estimado de reparación
+    And debe ofrecerle recibir actualizaciones sin necesidad de hablar con un agente
 
   Scenario: Cierre de incidente maestro con resolución en cascada
     Given que existe un incidente maestro con tickets hijos vinculados
