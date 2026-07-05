@@ -13,6 +13,13 @@ Iniciativa 1: Plataforma de Integración Empresarial.
 
 Esta iniciativa busca integrar los sistemas críticos de FiberLink mediante APIs, eventos y trazabilidad end-to-end, reduciendo integraciones punto a punto y habilitando procesos comerciales, operacionales y financieros más consistentes.
 
+Iniciativa 2: Automatización y mejoras operacionales.  
+Esta iniciativa tiene como objetivo automatizar procesos críticos de FiberLink para reducir tareas manuales y mejorar la eficiencia en la provisión y gestión de servicios.
+
+Iniciativa 3: Plataforma de observabilidad. 
+Esta iniciativa tiene como objetivo centralizar métricas, logs, trazas y eventos para mejorar el monitoreo y la operación.
+
+
 ## Tarea / Objetivo
 Diseñar la solución de la Plataforma de Integración Empresarial considerando:
 
