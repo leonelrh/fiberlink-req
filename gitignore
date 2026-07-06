@@ -1,0 +1,59 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle
+.gradle/
+build/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Archives
+*.zip
+*.tar
+*.gz
+*.rar
+
+# Java
+*.class
+hs_err_pid*
+replay_pid*
+
+# Quarkus
+.quarkus/
+
+# Generated files
+generated/
