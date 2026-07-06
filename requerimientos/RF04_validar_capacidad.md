@@ -1,12 +1,12 @@
-# RF02 - Consultar cobertura
+# RF04 - Validar capacidad técnica
 
 ## Historia de usuario
 Como asesor comercial,
-quiero consultar la cobertura de fibra óptica por dirección o coordenadas,
-para confirmar si un cliente puede contratar el servicio antes de registrar la venta.
+quiero validar capacidad técnica de nodo, CTO y puerto disponible,
+para evitar vender servicios que no puedan ser instalados.
 
 ## Requerimientos funcionales
-- La plataforma debe cumplir la funcionalidad de consultar cobertura mediante la Plataforma de Integración Empresarial.
+- La plataforma debe cumplir la funcionalidad de validar capacidad técnica mediante la Plataforma de Integración Empresarial.
 - La funcionalidad debe operar mediante contratos explícitos de entrada, salida y errores.
 - La funcionalidad debe evitar integraciones punto a punto entre sistemas core.
 - La funcionalidad debe registrar evidencias de intercambio y resultado operativo.
@@ -36,32 +36,32 @@ para confirmar si un cliente puede contratar el servicio antes de registrar la v
 ## Escenarios Gherkin
 
 ```gherkin
-Feature: Consultar cobertura
+Feature: Validar capacidad técnica
 
 Scenario: Ejecución exitosa
   Given que el consumidor está autorizado
   And la solicitud contiene datos válidos
-  When se ejecuta la funcionalidad de consultar cobertura
+  When se ejecuta la funcionalidad de validar capacidad técnica
   Then la Plataforma de Integración debe procesar la solicitud
   And debe retornar una respuesta conforme al contrato
   And debe registrar la trazabilidad con correlationId
 
 Scenario: Solicitud inválida
   Given que la solicitud tiene datos incompletos o inválidos
-  When se ejecuta la funcionalidad de consultar cobertura
+  When se ejecuta la funcionalidad de validar capacidad técnica
   Then la plataforma debe rechazar la solicitud
   And debe indicar los campos o reglas incumplidas
   And debe registrar el intento con correlationId
 
 Scenario: Sistema destino no disponible
   Given que un sistema core requerido no responde
-  When se ejecuta la funcionalidad de consultar cobertura
+  When se ejecuta la funcionalidad de validar capacidad técnica
   Then la plataforma debe devolver un error controlado
   And debe registrar sistema afectado, código de error y tiempo de respuesta
 
 Scenario: Consumidor no autorizado
   Given que el consumidor no tiene autorización
-  When intenta ejecutar la funcionalidad de consultar cobertura
+  When intenta ejecutar la funcionalidad de validar capacidad técnica
   Then la plataforma debe rechazar la solicitud
   And debe registrar auditoría del intento
 ```

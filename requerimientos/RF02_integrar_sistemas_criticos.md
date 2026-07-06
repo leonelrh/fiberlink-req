@@ -1,4 +1,4 @@
-# RF01 - Integrar sistemas críticos
+# RF02 - Integrar sistemas críticos
 
 ## Historia de usuario
 Como arquitecto de integración de FiberLink,

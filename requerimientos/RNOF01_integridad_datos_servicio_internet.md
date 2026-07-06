@@ -1,7 +1,7 @@
 # Requerimiento No Funcional: Integridad de Datos del Servicio de Internet entre Plataformas
 
 ## Identificador
-RNF-002
+RNOF-01
 
 ## Categoría
 Integridad de Datos / Consistencia entre Sistemas

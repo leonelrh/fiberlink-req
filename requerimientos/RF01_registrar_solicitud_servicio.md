@@ -1,12 +1,12 @@
-# RF03 - Validar capacidad técnica
+# RF01 - Registrar solicitud de servicio
 
 ## Historia de usuario
 Como asesor comercial,
-quiero validar capacidad técnica de nodo, CTO y puerto disponible,
-para evitar vender servicios que no puedan ser instalados.
+quiero registrar una solicitud de servicio solo cuando exista cobertura y capacidad,
+para asegurar que la venta sea técnicamente viable.
 
 ## Requerimientos funcionales
-- La plataforma debe cumplir la funcionalidad de validar capacidad técnica mediante la Plataforma de Integración Empresarial.
+- La plataforma debe cumplir la funcionalidad de registrar solicitud de servicio mediante la Plataforma de Integración Empresarial.
 - La funcionalidad debe operar mediante contratos explícitos de entrada, salida y errores.
 - La funcionalidad debe evitar integraciones punto a punto entre sistemas core.
 - La funcionalidad debe registrar evidencias de intercambio y resultado operativo.
@@ -36,32 +36,32 @@ para evitar vender servicios que no puedan ser instalados.
 ## Escenarios Gherkin
 
 ```gherkin
-Feature: Validar capacidad técnica
+Feature: Registrar solicitud de servicio
 
 Scenario: Ejecución exitosa
   Given que el consumidor está autorizado
   And la solicitud contiene datos válidos
-  When se ejecuta la funcionalidad de validar capacidad técnica
+  When se ejecuta la funcionalidad de registrar solicitud de servicio
   Then la Plataforma de Integración debe procesar la solicitud
   And debe retornar una respuesta conforme al contrato
   And debe registrar la trazabilidad con correlationId
 
 Scenario: Solicitud inválida
   Given que la solicitud tiene datos incompletos o inválidos
-  When se ejecuta la funcionalidad de validar capacidad técnica
+  When se ejecuta la funcionalidad de registrar solicitud de servicio
   Then la plataforma debe rechazar la solicitud
   And debe indicar los campos o reglas incumplidas
   And debe registrar el intento con correlationId
 
 Scenario: Sistema destino no disponible
   Given que un sistema core requerido no responde
-  When se ejecuta la funcionalidad de validar capacidad técnica
+  When se ejecuta la funcionalidad de registrar solicitud de servicio
   Then la plataforma debe devolver un error controlado
   And debe registrar sistema afectado, código de error y tiempo de respuesta
 
 Scenario: Consumidor no autorizado
   Given que el consumidor no tiene autorización
-  When intenta ejecutar la funcionalidad de validar capacidad técnica
+  When intenta ejecutar la funcionalidad de registrar solicitud de servicio
   Then la plataforma debe rechazar la solicitud
   And debe registrar auditoría del intento
 ```

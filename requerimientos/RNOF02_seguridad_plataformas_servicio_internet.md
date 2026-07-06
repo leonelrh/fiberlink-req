@@ -1,7 +1,7 @@
 # Requerimiento No Funcional: Seguridad de las Plataformas del Servicio de Internet
 
 ## Identificador
-RNF-003
+RNOFO2
 
 ## Categoría
 Seguridad / Gestión de Riesgos

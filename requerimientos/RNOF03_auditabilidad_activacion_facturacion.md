@@ -1,7 +1,7 @@
 # Requerimiento No Funcional: Trazabilidad y Auditabilidad del Proceso de Activación y Facturación
 
 ## Identificador
-RNF-001
+RNOFO3
 
 ## Categoría
 Trazabilidad y Auditabilidad
