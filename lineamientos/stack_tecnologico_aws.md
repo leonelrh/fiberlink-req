@@ -1,67 +1,160 @@
 ## Stack Tecnológico
 
-Proveedor Nube: AWS
+# Stack Tecnológico
 
-Servicios:
+**Proveedor de Nube:** Amazon Web Services (AWS)
 
-- Cómputo:
-  - Lambda: Elige Lambda cuando la carga de trabajo es intermitente o impredecible. El tráfico no es constante en el tiempo.
-  - Fargate: Elige contenedores docker en Fargate cuando el tráfico es constante en el tiempo y además es alto (24/7). Se necesita que los microservicios siempre estén activos y respondan rápidamente.
+## Servicios
 
-- Contenedores:
-  - Repositorio de imágenes docker: Elastic Container Registry (ECR)
-  - Orquestador de contenedores: Preferencia de Elastic Container Service (ECS) sobre Elastic Kubernetes Service (EKS)
+### Cómputo
 
-- Almacenamiento:
-  - Archivos: Simple Storage Service (S3)
+- **AWS Lambda**
+  - Utilizar cuando la carga de trabajo es intermitente o impredecible.
+  - Ideal para aplicaciones serverless, procesamiento de eventos e integraciones.
 
-- Bases de datos:
-  - SQL: Aurora PostgreSQL (Si tienes más escrituras que lecturas) o Aurora MySQL (Si tienes más lecturas que escrituras)
-  - NoSQL: DynamoDB
-  - Caché: ElastiCache (Redis)
+- **AWS Fargate**
+  - Recomendado para microservicios ejecutados en contenedores sin administrar servidores.
+  - Ideal cuando el tráfico es constante y los servicios deben permanecer disponibles 24/7.
 
-- Redes y Entrega de Contenidos:
-  - CDN (Content Delivery Network): CloudFront
-  - Api Gateway: Api Gateway
-  - DNS (Domain Name System): Route 53
+- **Amazon ECS (Elastic Container Service)**
+  - Servicio administrado para ejecutar aplicaciones en contenedores.
+  - Recomendado para la mayoría de arquitecturas de microservicios por su simplicidad y menor costo operativo.
 
-- Administración y gobierno:
-  - Systems Manager (Parameter Store)
-  - CloudTrail (Auditoría)
-  - CloudFormation (IaC)
+- **Amazon EKS (Elastic Kubernetes Service)**
+  - Utilizar cuando se requiere Kubernetes administrado.
+  - Recomendado para organizaciones que ya utilizan Kubernetes o necesitan funcionalidades avanzadas de orquestación.
 
-- Integración de Aplicaciones:
-  - Step Functions
-  - Simple Notification Service (SNS)
-  - Simple Queue Service (SQS)
-  - EventBridge
+- **Amazon EC2**
+  - Para aplicaciones que requieren control total sobre el sistema operativo o cargas de trabajo tradicionales.
 
-- Observabilidad:
-  - Métricas y Logs: CloudWatch
-  - Trazas: X-Ray
-  - Grafana
+---
 
-- Machine Learning:
-  - Modelos Machine Learning: SageMaker AI
-  - Imágenes y Videos: Rekognition
-  - : Textract
-  - Agentes IA: Bedrock, Bedrock AgentCore
+### Contenedores
 
-- Análisis:
-  - Athena
-  - Redshift
-  - OpenSearch
-  - Kinesis
-  - Lake Formation
-  - Glue
+- **Repositorio de imágenes Docker**
+  - Amazon Elastic Container Registry (ECR)
 
-- Seguridad, identidad y conformidad
-  - Cognito
-  - Secrets Manager
-  - IAM
-  - Key Management Service
-  - WAF
+- **Orquestador de contenedores**
+  - Preferencia: Amazon ECS con AWS Fargate.
+  - Amazon EKS cuando se requieren capacidades avanzadas de Kubernetes.
 
-- FrontEnd:
-  - Amplify
-  - Location Service
+---
+
+### Almacenamiento
+
+- **Archivos y Objetos**
+  - Amazon Simple Storage Service (S3)
+
+- **Sistema de archivos compartido**
+  - Amazon Elastic File System (EFS)
+
+- **Almacenamiento por bloques**
+  - Amazon Elastic Block Store (EBS)
+
+---
+
+### Bases de Datos
+
+- **SQL**
+  - Amazon Aurora PostgreSQL
+  - Amazon Aurora MySQL
+  - Amazon RDS
+
+- **NoSQL**
+  - Amazon DynamoDB
+
+- **Caché**
+  - Amazon ElastiCache for Redis
+
+---
+
+### Redes y Entrega de Contenidos
+
+- **CDN (Content Delivery Network)**
+  - Amazon CloudFront
+
+- **API Gateway**
+  - Amazon API Gateway
+
+- **DNS (Domain Name System)**
+  - Amazon Route 53
+
+- **Balanceador de carga**
+  - Application Load Balancer (ALB)
+  - Network Load Balancer (NLB)
+
+- **Red privada**
+  - Amazon Virtual Private Cloud (VPC)
+
+- **Conectividad privada**
+  - AWS PrivateLink
+
+---
+
+### Administración y Gobierno
+
+- AWS Systems Manager
+- AWS CloudTrail
+- AWS CloudFormation
+- AWS Config
+- AWS Organizations
+- AWS Control Tower
+
+---
+
+### Integración de Aplicaciones
+
+- AWS Step Functions
+- Amazon Simple Notification Service (SNS)
+- Amazon Simple Queue Service (SQS)
+- Amazon EventBridge
+- Amazon Managed Streaming for Apache Kafka (MSK)
+
+---
+
+### Observabilidad
+
+- **Métricas y Logs**
+  - Amazon CloudWatch
+- **Trazabilidad Distribuida**
+  - AWS X-Ray
+- **Dashboards**
+  - Amazon Managed Grafana
+
+---
+
+### Análisis de Datos
+
+- Amazon Athena
+- Amazon Redshift
+- Amazon OpenSearch Service
+- Amazon Kinesis
+- AWS Glue
+- AWS Lake Formation
+- Amazon EMR
+- Amazon QuickSight
+
+---
+
+### Seguridad, Identidad y Cumplimiento
+
+- Amazon Cognito
+- AWS IAM
+- AWS IAM Identity Center
+- AWS Secrets Manager
+- AWS Key Management Service (KMS)
+- AWS Certificate Manager (ACM)
+- AWS Web Application Firewall (WAF)
+- AWS Shield
+- Amazon GuardDuty
+- AWS Security Hub
+
+---
+
+### Front-End
+
+- AWS Amplify
+- Amazon CloudFront
+- Amazon Location Service
+
+---

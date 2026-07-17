@@ -1,8 +1,5 @@
 # Volumetría - FiberLink Andina Telecom
 
-## Contexto de uso
-La Plataforma de Integración Empresarial será consumida por Portal de Clientes, App Móvil, Call Center, CRM, OSS/OCS, Facturación y componentes de observabilidad/analítica.
-
 ## Volumetría estimada
 - 1.9 millones de clientes residenciales.
 - 46,000 clientes empresariales.
@@ -18,9 +15,3 @@ La Plataforma de Integración Empresarial será consumida por Portal de Clientes
 - Cada evento ocupa entre 2 KB y 5 KB.
 - Cada registro de auditoría ocupa entre 1 KB y 3 KB.
 
-## Implicancias arquitectónicas
-- Debe existir escalamiento horizontal en componentes de integración.
-- Las consultas frecuentes pueden optimizarse con caché cuando no comprometan consistencia.
-- Las operaciones diferibles deben procesarse de forma asíncrona.
-- La trazabilidad debe permitir búsqueda por correlationId.
-- La arquitectura debe soportar crecimiento gradual sin rediseño completo.
