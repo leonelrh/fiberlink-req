@@ -1,53 +1,154 @@
-# Diagrama de Secuencia — RF03 Consultar cobertura
+# Diagrama de Secuencia - RF03: Consultar Cobertura
 
-Cubre: RF03-E01 (exitoso), RF03-E02 (solicitud inválida), RF03-E03 (sistema destino no disponible), RF03-E04 (no autorizado). Incluye la sincronización asíncrona de la réplica desde Inventario/GIS.
+## Descripción
+Flujo completo de consulta de cobertura de fibra óptica por dirección o coordenadas a través de la Plataforma de Integración Empresarial.
+
+## Diagrama de Secuencia
 
 ```mermaid
 sequenceDiagram
-    autonumber
-    actor Canal as Asesor (CRM/Portal AWS/App móvil/Tablet campo)
-    participant APIM as Azure API Management
-    participant COB as ms-cobertura
-    participant BD as Azure SQL (réplica cobertura)
-    participant TRZ as ms-trazabilidad
-    participant SB as Service Bus / Pub-Sub
-    participant INV as Inventario Oracle + GIS (on-premises)
-    participant CON as ms-conectores-core
+    participant AC as Asesor Comercial
+    participant CRM as CRM SaaS
+    participant APIGw as API Gateway
+    participant Auth as Servicio Autenticación
+    participant PIE as Plataforma Integración
+    participant CS as Coverage Service
+    participant Oracle as Inventario Oracle
+    participant Cache as Redis Cache
+    participant Audit as Servicio Auditoría
+    participant Obs as Plataforma Observabilidad
 
-    Canal->>APIM: GET /v1/cobertura?direccion|coordenadas (correlationId)
-    APIM->>APIM: OAuth2 + rate limiting (SEG-07)
-    alt RF03-E04 Consumidor no autorizado
-        APIM-->>Canal: 401/403 rechazo
-        APIM--)TRZ: Auditoría del intento
-    else Autorizado
-        APIM->>COB: Consulta cobertura
-        alt RF03-E02 Sin dirección ni coordenadas válidas
-            COB-->>Canal: 400 campos/reglas incumplidas
-            COB--)TRZ: Traza del intento (correlationId)
-        else Parámetros válidos
-            COB->>COB: Busca en caché (ESC-04)
-            COB->>BD: Consulta zona de cobertura
-            alt RF03-E03 Réplica no disponible
-                BD--xCOB: Error de acceso
-                COB-->>Canal: 503 error controlado
-                COB--)TRZ: Traza FALLIDO (sistema afectado, código, tiempo)
-            else RF03-E01 Ejecución exitosa
-                BD-->>COB: Zona, nodo, CTO, planes
-                COB-->>APIM: 200 respuesta conforme al contrato
-                APIM-->>Canal: 200 cobertura + planes disponibles
-                COB--)TRZ: Traza OK con correlationId
-            end
-        end
+    Note over AC, Obs: RF03-ESC01: Ejecución exitosa
+
+    AC->>CRM: Ingresa dirección del prospecto
+    CRM->>APIGw: POST /api/v1/coverage/validate
+    Note right of CRM: {address, coordinates, correlationId}
+    
+    APIGw->>Auth: Validar token JWT
+    Auth-->>APIGw: Token válido
+    
+    APIGw->>PIE: Reenvía consulta autenticada
+    PIE->>CS: Consultar cobertura
+    Note right of PIE: Propaga correlationId
+    
+    CS->>Cache: Verificar cache por address_hash
+    alt Cache Hit (Datos válidos)
+        Cache-->>CS: Datos de cobertura cached
+        CS->>Obs: Log cache hit + métricas
+    else Cache Miss o Expirado
+        CS->>Oracle: Consultar nodos y CTOs cercanos
+        Note right of CS: Radio 500m, filtrar activos
+        Oracle-->>CS: Lista de nodos disponibles
+        
+        CS->>Oracle: Verificar capacidad por CTO
+        Oracle-->>CS: Detalles de capacidad
+        
+        CS->>CS: Calcular distancias y tecnología
+        CS->>Cache: Guardar resultado (TTL 1h)
+    end
+    
+    CS->>Audit: Registrar consulta
+    Note right of Audit: correlationId, requesterId, resultado
+    
+    CS-->>PIE: Respuesta de cobertura
+    PIE-->>APIGw: Resultado estructurado
+    APIGw-->>CRM: Respuesta HTTP 200
+    CRM->>AC: Muestra disponibilidad y velocidades
+
+    Note over AC, Obs: RF03-ESC02: Solicitud inválida
+
+    AC->>CRM: Ingresa dirección incompleta
+    CRM->>APIGw: POST /api/v1/coverage/validate
+    Note right of CRM: {address: {street: ""}}
+    
+    APIGw->>PIE: Reenvía consulta
+    PIE->>CS: Consultar cobertura
+    CS->>CS: Validar formato de entrada
+    Note right of CS: Dirección incompleta detectada
+    
+    CS->>Audit: Registrar intento fallido
+    CS-->>PIE: Error 400 - Datos incompletos
+    PIE-->>APIGw: Error estructurado
+    APIGw-->>CRM: HTTP 400 con detalles
+    CRM->>AC: Solicitar campos faltantes
+
+    Note over AC, Obs: RF03-ESC03: Sistema Oracle no disponible
+
+    AC->>CRM: Consulta cobertura válida
+    CRM->>APIGw: POST /api/v1/coverage/validate
+    APIGw->>Auth: Validar token
+    Auth-->>APIGw: Token válido
+    
+    APIGw->>PIE: Consulta autenticada
+    PIE->>CS: Consultar cobertura
+    CS->>Cache: Verificar cache
+    Cache-->>CS: Cache miss
+    
+    CS->>Oracle: Consultar inventario
+    Note right of Oracle: Timeout después de 5s
+    Oracle--xCS: Connection timeout
+    
+    CS->>CS: Aplicar circuit breaker
+    CS->>Obs: Registrar falla de conectividad
+    CS->>Audit: Registrar error técnico
+    
+    CS-->>PIE: Error 503 - Sistema no disponible
+    PIE-->>APIGw: Error de infraestructura
+    APIGw-->>CRM: HTTP 503
+    CRM->>AC: "Servicio temporalmente no disponible"
+
+    Note over AC, Obs: RF03-ESC04: Consumidor no autorizado
+
+    AC->>CRM: Intenta consultar cobertura
+    CRM->>APIGw: POST sin token válido
+    
+    APIGw->>Auth: Validar token ausente/inválido
+    Auth-->>APIGw: Error 401 - No autorizado
+    
+    APIGw->>Audit: Registrar intento no autorizado
+    APIGw-->>CRM: HTTP 401 Unauthorized
+    CRM->>AC: Solicitar nueva autenticación
+
+    Note over AC, Obs: Métricas y Observabilidad
+
+    loop Cada consulta
+        CS->>Obs: Métricas de latencia
+        CS->>Obs: Contadores por tipo de resultado
+        Audit->>Obs: Eventos de auditoría
+        Oracle->>Obs: Métricas de conectividad
     end
 
-    Note over INV,COB: Sincronización asíncrona de la réplica (INT-02)
-    INV->>CON: Cambios de cobertura (canal seguro on-premises)
-    CON->>SB: Evento InventarioCoberturaActualizada (INT-09)
-    SB->>COB: Entrega del evento
-    alt Envolvente/esquema válido
-        COB->>BD: Upsert zonas de cobertura
-        COB--)TRZ: Traza de sincronización OK
-    else Evento inválido
-        COB->>SB: Mover a DLQ para reproceso (INT-11)
-    end
+    PIE->>Obs: Dashboard de consultas de cobertura
+    Note right of Obs: Rate, latencia, errores, cache hit ratio
 ```
+
+## Escenarios Cubiertos
+
+### ESC01: Ejecución Exitosa
+- **Flujo Principal**: Consulta válida con respuesta exitosa desde cache o Oracle
+- **Validaciones**: Autenticación, formato de dirección, coordenadas válidas
+- **Optimización**: Cache Redis para reducir carga en Oracle
+
+### ESC02: Solicitud Inválida
+- **Validaciones**: Campos obligatorios, formato de coordenadas
+- **Respuesta**: Error estructurado con campos faltantes
+- **Auditoría**: Registro de intentos fallidos para análisis
+
+### ESC03: Sistema Oracle No Disponible
+- **Resilencia**: Circuit breaker para evitar cascada de fallos
+- **Fallback**: Respuesta controlada sin comprometer otros sistemas
+- **Monitoreo**: Alertas automáticas por indisponibilidad
+
+### ESC04: Consumidor No Autorizado
+- **Seguridad**: Validación de tokens JWT en API Gateway
+- **Auditoría**: Registro de intentos no autorizados
+- **Respuesta**: Error estándar sin revelar información interna
+
+## Lineamientos Aplicados
+
+- **ARQ-03**: Responsabilidad clara del Coverage Service
+- **INT-01**: API versionada con contratos documentados
+- **SEG-04**: Autenticación centralizada
+- **ESC-04**: Cache para optimizar performance
+- **OBS-02**: Trazabilidad end-to-end con correlationId
+- **INT-18**: Degradación elegante ante fallos de Oracle
